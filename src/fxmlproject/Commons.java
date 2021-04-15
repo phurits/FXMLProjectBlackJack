@@ -12,4 +12,7 @@ package fxmlproject;
 public interface Commons {
     public final int W_WIDTH = 1280;
     public final int W_HEIGHT = 800;
+    
+    public final int CARD_WIDTH = 120;
+    public final int CARD_HEIGHT = 160;
 }

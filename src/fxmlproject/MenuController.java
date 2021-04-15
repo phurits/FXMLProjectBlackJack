@@ -153,7 +153,7 @@ public class MenuController implements Initializable, Commons {
     public void startGame() {
         stage = (Stage) startGame.getScene().getWindow();
         try {
-            Parent root = (Parent) FXMLLoader.load(getClass().getResource("Menu.fxml"));
+            Parent root = (Parent) FXMLLoader.load(getClass().getResource("Game.fxml"));
             Scene scene = new Scene(root, W_WIDTH, W_HEIGHT);
             stage.setScene(scene);
             stage.show();
