@@ -15,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -33,6 +34,9 @@ public class GameController implements Initializable, Commons {
 
     @FXML
     private AnchorPane background;
+
+    @FXML
+    private Label endGameText;
 
     @FXML
     private Button backMainmenu;
@@ -95,10 +99,12 @@ public class GameController implements Initializable, Commons {
         stand.setDisable(true);
         canClicked = false;
         resetGame();
-        
+
         //Set Value
         pCount = 0;
         dCount = 0;
+
+        endGameText.setVisible(false);
 
     }
 
@@ -164,13 +170,14 @@ public class GameController implements Initializable, Commons {
 
             playerDrawCard(playerCard1);
             playerDrawCard(playerCard2);
-            
+
             dealerDrawCard(dealerCard1);
             dealerCard2.setVisible(true);
             dealerCard2.setImage(new Image(getClass().getResourceAsStream("images/" + cardBack + ".png")));
-            
 
-
+            if (playerHand == 21) {
+                Blackjack();
+            }
         }
     }
 
@@ -180,7 +187,7 @@ public class GameController implements Initializable, Commons {
             playerHand = playerHand + pCard[i];
         }
         System.out.println(playerHand);
-        if (playerHand < 11) {
+        if (playerHand < 12) {
             for (int i = 0; i < pCount; i++) {
                 if (pCard[i] == 1) {
                     pCard[i] = 11;
@@ -195,6 +202,9 @@ public class GameController implements Initializable, Commons {
                 }
             }
         }
+        if (playerHand > 21) {
+            Bust();
+        }
         playerText.setText("Your Hand : " + playerHand);
     }
 
@@ -204,7 +214,7 @@ public class GameController implements Initializable, Commons {
             dealerHand = dealerHand + dCard[i];
         }
         System.out.println(dealerHand);
-        if (dealerHand < 11) {
+        if (dealerHand < 12) {
             for (int i = 0; i < dCount; i++) {
                 if (dCard[i] == 1) {
                     dCard[i] = 11;
@@ -248,9 +258,9 @@ public class GameController implements Initializable, Commons {
         System.out.println("playerDraw");
 
         pCount = pCount + 1;
-        
+
         calculatePlayerHand();
-        
+
         System.out.println("Player Count = " + pCount);
     }
 
@@ -261,7 +271,7 @@ public class GameController implements Initializable, Commons {
         cardNum = rand.nextInt(13);
 
         createCard(card, suit, cardNum);
-        
+
         int temp = 0;
         if (cardNum == 0) {
             temp = 1;
@@ -272,16 +282,13 @@ public class GameController implements Initializable, Commons {
         }
 
         dCard[dCount] = temp;
-        
 
         System.out.println(dCount);
         System.out.println(dCard[dCount]);
         System.out.println("dealerDraw");
 
-        
-
         dCount = dCount + 1;
-        
+
         calculateDealerHand();
     }
 
@@ -292,10 +299,6 @@ public class GameController implements Initializable, Commons {
     }
 
     public void computerDealer() {
-        dealerHand = 0;
-        dCount = 0;
-
-        dealerDrawCard(dealerCard1);
 
         while (dealerHand < 17) {
             if (dCount == 1) {
@@ -316,7 +319,7 @@ public class GameController implements Initializable, Commons {
 
     @FXML
     public void hit() {
-        
+
         if (pCount == 2) {
             playerDrawCard(playerCard3);
         } else if (pCount == 3) {
@@ -325,63 +328,103 @@ public class GameController implements Initializable, Commons {
             playerDrawCard(playerCard5);
         } else if (pCount == 5) {
             playerDrawCard(playerCard6);
-        } 
-        
+        }
+
         System.out.println("hitClicked");
     }
 
     @FXML
     public void stand() {
+
+        computerDealer();
+
         hit.setDisable(true);
         stand.setDisable(true);
 
         canClicked = true;
-        
+
         calculatePoints();
-        
-        
+
     }
-    
+
     public void calculatePoints() {
-        if(playerHand > dealerHand) {
+        if (dealerHand > 21) {
             System.out.println("Player WIN");
+            endGameText.setText("PLAYER WIN");
             bet = bet * 2;
             balance = balance + bet;
             bet = 0;
-            betText.setText("" + bet);
-            balanceText.setText("" + balance);
+            betText.setText("$" + bet);
+            balanceText.setText("$" + balance);
+        } else if (playerHand > dealerHand) {
+            System.out.println("Player WIN");
+            endGameText.setText("PLAYER WIN");
+            bet = bet * 2;
+            balance = balance + bet;
+            bet = 0;
+            betText.setText("$" + bet);
+            balanceText.setText("$" + balance);
         } else if (playerHand == dealerHand) {
             System.out.println("Draw");
+            endGameText.setText("DEALER WIN");
             bet = 0;
-            betText.setText("" + bet);
-            balanceText.setText("" + balance);
+            betText.setText("$" + bet);
+            balanceText.setText("$" + balance);
         } else {
             System.out.println("Delaer WIN");
+            endGameText.setText("DEALER WIN");
             bet = 0;
-            betText.setText("" + bet);
-            balanceText.setText("" + balance);
+            betText.setText("$" + bet);
+            balanceText.setText("$" + balance);
         }
-        
+        endGameText.setVisible(true);
     }
-    
+
+    public void Bust() {
+        System.out.println("BUST");
+        endGameText.setText("BUST");
+        hit.setDisable(true);
+        stand.setDisable(true);
+        endGameText.setVisible(true);
+        canClicked = true;
+    }
+
+    public void Blackjack() {
+        System.out.println("BLACKJACK");
+        endGameText.setText("BLACKJACK");
+        endGameText.setVisible(true);
+        hit.setDisable(true);
+        stand.setDisable(true);
+        bet = bet * 3;
+        balance = balance + bet;
+        bet = 0;
+        betText.setText("$" + bet);
+        balanceText.setText("$" + balance);
+
+        canClicked = true;
+    }
 
     @FXML
     public void clickedContinue() {
         if (canClicked == true) {
-            startGame(false);
+
             betText.setText("$" + 0);
+            balanceText.setText("$" + balance);
             hit.setDisable(true);
             stand.setDisable(true);
             canClicked = false;
-            
+            endGameText.setVisible(false);
+
             resetGame();
-            
+
             pCount = 0;
             dCount = 0;
             playerHand = 0;
             dealerHand = 0;
             playerText.setText("Your Hand : " + playerHand);
             dealerText.setText("Dealer's Hand : " + dealerHand);
+
+            startGame(false);
 
         }
     }
