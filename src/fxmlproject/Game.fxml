@@ -134,7 +134,7 @@
                         <Font size="23.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="bankText" disable="true" prefHeight="40.0" prefWidth="250.0" style="-fx-opacity: 1;" text="\$0">
+                  <TextField fx:id="balanceText" disable="true" prefHeight="40.0" prefWidth="250.0" style="-fx-opacity: 1;" text="\$0">
                      <font>
                         <Font size="19.0" />
                      </font>
@@ -187,7 +187,7 @@
             <Font size="20.0" />
          </font>
       </Text>
-      <ImageView fx:id="playerCard1" fitHeight="160.0" fitWidth="120.0" layoutX="568.0" layoutY="416.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="playerCard1" fitHeight="160.0" fitWidth="120.0" layoutX="564.0" layoutY="416.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@images/4_of_clubs.png" />
          </image></ImageView>

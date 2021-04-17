@@ -43,7 +43,7 @@ public class GameController implements Initializable, Commons {
     @FXML
     private TextField betText;
     @FXML
-    private TextField bankText;
+    private TextField balanceText;
 
     @FXML
     private Text dealerText, playerText;
@@ -90,7 +90,7 @@ public class GameController implements Initializable, Commons {
     //CODING TIME!!! --------------------------------------------------------------
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        bankText.setText("$" + balance);
+        balanceText.setText("$" + balance);
         hit.setDisable(true);
         stand.setDisable(true);
         canClicked = false;
@@ -155,7 +155,7 @@ public class GameController implements Initializable, Commons {
         } else {
             //Update Balance
             balance = balance - bet;
-            bankText.setText("$" + balance);
+            balanceText.setText("$" + balance);
 
             //Disable Buttons
             startGame(true);
@@ -164,6 +164,11 @@ public class GameController implements Initializable, Commons {
 
             playerDrawCard(playerCard1);
             playerDrawCard(playerCard2);
+            
+            dealerDrawCard(dealerCard1);
+            dealerCard2.setVisible(true);
+            dealerCard2.setImage(new Image(getClass().getResourceAsStream("images/" + cardBack + ".png")));
+            
 
 
         }
@@ -214,7 +219,7 @@ public class GameController implements Initializable, Commons {
                 }
             }
         }
-        dealerText.setText("Dealer's Hand : " + playerHand);
+        dealerText.setText("Dealer's Hand : " + dealerHand);
     }
 
     public void playerDrawCard(ImageView card) {
@@ -242,11 +247,11 @@ public class GameController implements Initializable, Commons {
         System.out.println(pCard[pCount]);
         System.out.println("playerDraw");
 
-        
-        
         pCount = pCount + 1;
         
         calculatePlayerHand();
+        
+        System.out.println("Player Count = " + pCount);
     }
 
     public void dealerDrawCard(ImageView card) {
@@ -311,16 +316,18 @@ public class GameController implements Initializable, Commons {
 
     @FXML
     public void hit() {
-
+        
         if (pCount == 2) {
             playerDrawCard(playerCard3);
-        } else if (dCount == 3) {
+        } else if (pCount == 3) {
             playerDrawCard(playerCard4);
-        } else if (dCount == 4) {
+        } else if (pCount == 4) {
             playerDrawCard(playerCard5);
-        } else if (dCount == 5) {
+        } else if (pCount == 5) {
             playerDrawCard(playerCard6);
         } 
+        
+        System.out.println("hitClicked");
     }
 
     @FXML
@@ -329,7 +336,34 @@ public class GameController implements Initializable, Commons {
         stand.setDisable(true);
 
         canClicked = true;
+        
+        calculatePoints();
+        
+        
     }
+    
+    public void calculatePoints() {
+        if(playerHand > dealerHand) {
+            System.out.println("Player WIN");
+            bet = bet * 2;
+            balance = balance + bet;
+            bet = 0;
+            betText.setText("" + bet);
+            balanceText.setText("" + balance);
+        } else if (playerHand == dealerHand) {
+            System.out.println("Draw");
+            bet = 0;
+            betText.setText("" + bet);
+            balanceText.setText("" + balance);
+        } else {
+            System.out.println("Delaer WIN");
+            bet = 0;
+            betText.setText("" + bet);
+            balanceText.setText("" + balance);
+        }
+        
+    }
+    
 
     @FXML
     public void clickedContinue() {
@@ -344,6 +378,10 @@ public class GameController implements Initializable, Commons {
             
             pCount = 0;
             dCount = 0;
+            playerHand = 0;
+            dealerHand = 0;
+            playerText.setText("Your Hand : " + playerHand);
+            dealerText.setText("Dealer's Hand : " + dealerHand);
 
         }
     }
