@@ -67,6 +67,8 @@ public class GameController implements Initializable, Commons {
     private int suit = 0;
     private int cardNum = 0;
 
+    private int usedCard[][] = new int[4][13];
+
     private String[][] deckPath = {
         {"ace_of_spades", "2_of_spades", "3_of_spades", "4_of_spades", "5_of_spades", "6_of_spades", "7_of_spades",
             "8_of_spades", "9_of_spades", "10_of_spades", "jack_of_spades", "queen_of_spades",
@@ -181,27 +183,29 @@ public class GameController implements Initializable, Commons {
         }
     }
 
+    public int checkUsedCard(int suit, int cardNum) {
+        if (usedCard[suit][cardNum] == 0) {
+            usedCard[suit][cardNum] = usedCard[suit][cardNum] + 1;
+            System.out.println("Check Used = 0");
+            return 0;
+            
+        }
+        System.out.println("Check Used = 1");
+        return usedCard[suit][cardNum];
+    }
+
     public void calculatePlayerHand() {
         playerHand = 0;
         for (int i = 0; i < pCount; i++) {
             playerHand = playerHand + pCard[i];
-        }
-        System.out.println(playerHand);
-        if (playerHand < 12) {
-            for (int i = 0; i < pCount; i++) {
-                if (pCard[i] == 1) {
-                    pCard[i] = 11;
-                    playerHand = playerHand + 10;
-                }
-            }
-        } else {
-            for (int i = 0; i < pCount; i++) {
+            if (playerHand > 21) {
                 if (pCard[i] == 11) {
                     pCard[i] = 1;
                     playerHand = playerHand - 10;
                 }
             }
         }
+        System.out.println("Player Hand = " + playerHand);
         if (playerHand > 21) {
             Bust();
         }
@@ -212,31 +216,25 @@ public class GameController implements Initializable, Commons {
         dealerHand = 0;
         for (int i = 0; i < dCount; i++) {
             dealerHand = dealerHand + dCard[i];
-        }
-        System.out.println(dealerHand);
-        if (dealerHand < 12) {
-            for (int i = 0; i < dCount; i++) {
-                if (dCard[i] == 1) {
-                    dCard[i] = 11;
-                    dealerHand = dealerHand + 10;
-                }
-            }
-        } else {
-            for (int i = 0; i < dCount; i++) {
+            if (dealerHand > 21) {
                 if (dCard[i] == 11) {
                     dCard[i] = 1;
                     dealerHand = dealerHand - 10;
                 }
             }
         }
+
         dealerText.setText("Dealer's Hand : " + dealerHand);
     }
 
     public void playerDrawCard(ImageView card) {
         Random rand = new Random();
 
-        suit = rand.nextInt(4);
-        cardNum = rand.nextInt(13);
+        do {
+            suit = rand.nextInt(4);
+            cardNum = rand.nextInt(13);
+
+        } while (checkUsedCard(suit, cardNum) == 1);
 
         //create card
         createCard(card, suit, cardNum);
@@ -244,7 +242,7 @@ public class GameController implements Initializable, Commons {
         //Give value to card;
         int temp = 0;
         if (cardNum == 0) {
-            temp = 1;
+            temp = 11;
         } else if (cardNum == 10 || cardNum == 11 || cardNum == 12) {
             temp = 10;
         } else {
@@ -252,29 +250,30 @@ public class GameController implements Initializable, Commons {
         }
 
         pCard[pCount] = temp;
-
-        System.out.println(pCount);
-        System.out.println(pCard[pCount]);
+        
         System.out.println("playerDraw");
 
         pCount = pCount + 1;
 
         calculatePlayerHand();
 
-        System.out.println("Player Count = " + pCount);
     }
 
     public void dealerDrawCard(ImageView card) {
         Random rand = new Random();
 
-        suit = rand.nextInt(4);
-        cardNum = rand.nextInt(13);
+        do {
+            suit = rand.nextInt(4);
+            cardNum = rand.nextInt(13);
 
+        } while (checkUsedCard(suit, cardNum) == 1);
+        
+        //create card
         createCard(card, suit, cardNum);
 
         int temp = 0;
         if (cardNum == 0) {
-            temp = 1;
+            temp = 11;
         } else if (cardNum == 10 || cardNum == 11 || cardNum == 12) {
             temp = 10;
         } else {
@@ -282,10 +281,6 @@ public class GameController implements Initializable, Commons {
         }
 
         dCard[dCount] = temp;
-
-        System.out.println(dCount);
-        System.out.println(dCard[dCount]);
-        System.out.println("dealerDraw");
 
         dCount = dCount + 1;
 
@@ -313,7 +308,6 @@ public class GameController implements Initializable, Commons {
                 dealerDrawCard(dealerCard6);
             }
             calculateDealerHand();
-
         }
     }
 
@@ -383,6 +377,7 @@ public class GameController implements Initializable, Commons {
     public void Bust() {
         System.out.println("BUST");
         endGameText.setText("BUST");
+        bet = 0;
         hit.setDisable(true);
         stand.setDisable(true);
         endGameText.setVisible(true);
